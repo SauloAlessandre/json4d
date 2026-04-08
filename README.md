@@ -283,7 +283,7 @@ Contribuições são bem-vindas!
 
 ## 📄 Licença
 
-MIT
+GPLv3
 
 ---
 
