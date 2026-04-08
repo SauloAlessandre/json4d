@@ -1,17 +1,17 @@
 # json4d
 
-**json4d** (JSON for Data) é um formato de dados baseado em JSON, otimizado para:
+**json4d** (JSON for Data) It JSON-based data format, optimized for:
 
-* 📖 **legibilidade**
-* 📦 **redução de redundância**
-* ✅ **validação declarativa via schema**
-* ⚡ **processamento eficiente**
+* 📖 ** readability **
+* 📦 ** redundancy reduction **
+* ✅ ** declarative validation via schema **
+* ⚡ ** efficient processing **
 
 ---
 
-## 🚀 Motivação
+## 🚀 Motivation
 
-No JSON tradicional, estruturas tabulares repetem metadados em cada linha:
+In traditional JSON, tabular structures repeat metadata in each row:
 
 ```json
 [
@@ -20,7 +20,7 @@ No JSON tradicional, estruturas tabulares repetem metadados em cada linha:
 ]
 ```
 
-No **json4d**, o schema é definido uma única vez:
+In **json4d**, the schema is defined only once.:
 
 ```txt
 meta:json4d[1.3] {
@@ -33,22 +33,24 @@ meta:json4d[1.3] {
 ]
 ```
 
-✔ Menos redundância
-✔ Mais compacto
-✔ Mais legível para dados grandes
+✔ Less redundancy
+✔ More compact
+✔ More readable for large amounts of data
+✔ Data validation
+✔ Data restriction
 
 ---
 
-## 🧱 Estrutura do formato
+## 🧱 Format Structure
 
-O arquivo json4d possui duas partes:
+The json4d file has two parts:
 
-1. **Schema (metadados)**
-2. **Dados**
+1. **Schema (metadata)**
+2. **Data**
 
 ---
 
-### 📌 Exemplo completo
+### 📌 Full example
 
 ```txt
 meta:json4d[1.3] {
@@ -76,27 +78,27 @@ meta:json4d[1.3] {
 
 ---
 
-## 🧠 Conceitos principais
+## 🧠 Key concepts
 
-### 🔹 1. Schema único
+### 🔹 1. Single Scheme
 
-O schema define:
+The schema defines:
 
-* tipos
-* validações
-* estrutura
+* types
+* validations
+* structure
 
-👉 aplicado a todas as linhas
+👉 which is applied to all lines
 
 ---
 
-### 🔹 2. Dados posicionais
+### 🔹 2. Positional data
 
 ```txt
 [1, "crypto"]
 ```
 
-Mapeado para:
+Mapped to:
 
 ```json
 { "Id": 1, "Type": "crypto" }
@@ -104,26 +106,26 @@ Mapeado para:
 
 ---
 
-### 🔹 3. Objetos indexados
+### 🔹 3. Indexed objects
 
 ```txt
 {:0:"buy", :2:50}
 ```
 
-Permite:
+What allow:
 
-* omitir campos opcionais
-* reduzir tamanho
+* omit optional fields
+* reduce size
 
 ---
 
-### 🔹 4. Nested (subconjuntos)
+### 🔹 4. Nested (subsets)
 
 ```txt
 "orders": { ... }
 ```
 
-Representa arrays estruturados:
+Represents structured arrays:
 
 ```json
 "orders": [
@@ -133,18 +135,18 @@ Representa arrays estruturados:
 
 ---
 
-## ✅ Tipos suportados
+## ✅ Supported data types
 
 * `number`
 * `string`
 * `date`
-* `array` (implícito via nested)
+* `array` (implicit via nested)
 
 ---
 
-## 🔍 Validação
+## 🔍 Validation
 
-### ✔ Campo opcional
+### ✔ Optional field
 
 ```txt
 "Date": "date" : "optional"
@@ -160,13 +162,13 @@ Representa arrays estruturados:
 
 ---
 
-### ✔ Operadores
+### ✔ Logical Operators
 
 ```txt
 "Amount": "number" : "accept" = [">=": 0, "<=": 100]
 ```
 
-Suporta:
+It supports the following self-describing operators:
 
 * `>`
 * `<`
@@ -175,15 +177,15 @@ Suporta:
 
 ---
 
-### ✔ Validação de data
+### ✔ Data validation
 
-Formato ISO:
+ISO format:
 
 ```txt
 YYYY-MM-DD
 ```
 
-Exemplo:
+Example:
 
 ```txt
 2026-01-01 ✔
@@ -192,22 +194,22 @@ Exemplo:
 
 ---
 
-## ⚙️ Pipeline interno
+## ⚙️ Internal pipeline
 
-O processamento segue as etapas:
+The processing follows these steps:
 
 ```txt
 parse → bind → normalize → validate
 ```
 
-* **parse** → lê estrutura
-* **bind** → mapeia dados ao schema
-* **normalize** → ajusta tipos
-* **validate** → aplica regras
+* **parse** → read the structure
+* **bind** → maps data to schema
+* **normalize** → adjusts types
+* **validate** → applies rules
 
 ---
 
-## 📦 Instalação
+## 📦 Instalation
 
 ```bash
 npm install
@@ -215,7 +217,7 @@ npm install
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
 ```bash
 npm test
@@ -223,7 +225,7 @@ npm test
 
 ---
 
-## ▶️ Execução
+## ▶️ Execution
 
 ```bash
 npm run build
@@ -232,7 +234,7 @@ node dist/index.js
 
 ---
 
-## 📁 Estrutura do projeto
+## 📁 Project struture 
 
 ```txt
 src/
@@ -244,6 +246,10 @@ tests/
   01_lexer/
   02_parser/
   03_binder/
+
+tools/
+  benchmark/
+    benchmark.ts
 ```
 
 ---
@@ -260,41 +266,61 @@ tests/
 
 ---
 
-## 🚧 Roadmap
+## 📊 Benchmark
 
-* [ ] Mensagens de erro com linha/coluna
-* [ ] Suporte a datetime
-* [ ] Valores default
-* [ ] Tipos customizados
-* [ ] Serialização (writer)
+| Rows  |  JSon     | json4d  | Reduction |
+|-------|-----------|---------|-----------|
+| 10    | 1.541 b   | 916 b   | 40.56%    |
+| 100   | 15.491 b  | 7.576 b | 51.09%    |
+| 1000  | ~155 Kb   | ~75 Kb  | 51.84%    |
+| 10000 | ~1.568 Kb | ~759 Kb | 51.62%    |
+
+executing benchmark 
+```bash
+npx tsx benchmark.ts 1000
+```
 
 ---
 
-## 🤝 Contribuição
+## 🚧 Roadmap
 
-Contribuições são bem-vindas!
+* [ ] Error messagers with row/column
+* [ ] Datetime support
+* [ ] Default Values
+* [ ] Custom types
+* [ ] Serialization (writer)
+* [ ] Compact
+* [ ] Integrity (hash)
+
+---
+
+## 🤝 Contributions
+
+Contributions are welcome!
 
 1. Fork
-2. Crie uma branch
+2. Create a branch
 3. Commit
 4. Pull Request
 
 ---
 
-## 📄 Licença
+## 📄 Licence
 
 GPLv3
 
 ---
 
-## 💡 Inspiração
+## 💡 Inspirations
 
-O json4d é inspirado por:
+The json4d is inspired by:
 
 * JSON Schema
 * Apache Avro
 * Protocol Buffers
+* And in the unnecessary loss of bytes :D
 
-Com foco em:
+## Focusing on:
 
-👉 simplicidade + legibilidade + eficiência
+👉 simplicity + readability + efficiency
+
