@@ -1,0 +1,14 @@
+{
+  "name": "json4d",
+  "version": "1.2.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.2"
+  }
+}
