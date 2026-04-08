@@ -2,7 +2,7 @@
 
 **json4d** (JSON for Data) It JSON-based data format, optimized for:
 
-* 📖 ** readability **
+* 📖 **readability**
 * 📦 ** redundancy reduction **
 * ✅ ** declarative validation via schema **
 * ⚡ ** efficient processing **
