@@ -7,10 +7,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3 # Clona o repositório
-    - name: Configurar Node.js
+    - uses: actions/checkout@v3 # repository clone
+    - name: Configure Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
-    - run: npm ci # Instala dependências
-    - run: npm test # Roda os testes
+        node-version: '24'
+#	- run: npm install #
+    - run: npm ci   # install dependency
+    - run: npm test # run tests
