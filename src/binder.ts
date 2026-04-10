@@ -1,13 +1,21 @@
-export function bindData(schema: any, data: any[]): any[] {
+/**
+ * project: json4d
+ * 
+ * functions to bind
+ */
+
+import { DataRow, DataSet, FieldSchema, Schema } from "./type.js";
+
+export function bindData(schema: Schema, data: any[]): DataSet {
     return data.map((row) => bindRow(schema, row));
 }
 
-export function bindRow(schema: any, row: any): any {
+export function bindRow(schema: Schema, row: any): DataRow {
     const result: any = {};
     const fields = Object.keys(schema);
 
     // 🔹 função auxiliar recursiva
-    function bindValue(fieldSchema: any, value: any): any {
+    function bindValue(fieldSchema: FieldSchema, value: any): any {
         // 🔥 nested array
         if (fieldSchema.type === "array") {
             if (!Array.isArray(value)) {
@@ -51,7 +59,7 @@ export function bindRow(schema: any, row: any): any {
                 throw new Error(`Unknown operator ${op}`);
         }
     }
-    function validate(fieldName: string, schema: any, value: any) {
+    function validate(fieldName: string, schema: FieldSchema, value: any) {
         // 🔹 optional
         if (value === undefined || value === null) {
             if (schema.optional) return;

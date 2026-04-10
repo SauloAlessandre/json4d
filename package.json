@@ -10,5 +10,8 @@
   "devDependencies": {
     "typescript": "^5.0.0",
     "vitest": "^4.1.2"
+  },
+  "dependencies": {
+    "24": "^0.0.0"
   }
 }

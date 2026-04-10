@@ -1,4 +1,11 @@
+/**
+ * project: json4d
+ * 
+ * class parser
+ */
+
 import { Lexer, Token } from "./lexer.js";
+import { FieldSchema, Schema } from "./type.js";
 
 export class Parser {
   private current: Token;
@@ -59,10 +66,10 @@ export class Parser {
     return rules;
   }
 
-  parseSchema(): any {
+  parseSchema(): Schema {
     this.eat("LBRACE");
 
-    const obj: any = {};
+    let obj: Schema = {};
 
     while (this.current.type !== "RBRACE") {
       const key = this.current.value!;
@@ -70,7 +77,11 @@ export class Parser {
 
       this.eat("COLON");
 
-      let field: any;
+      let field: FieldSchema;
+
+      function isPrimitiveType(value: any): value is "string" | "number" | "date" {
+          return value === "string" || value === "number" || value === "date";
+      }
 
       // 🔹 caso nested
       if (this.current.type === "LBRACE") {
@@ -85,16 +96,22 @@ export class Parser {
         let typeToken = this.current;
         this.eat(typeToken.type);
 
+        if (!isPrimitiveType(typeToken.value)) {
+          throw new Error(`Invalid type: ${typeToken.value}`);
+        }
         field = { type: typeToken.value };
+
       }
 
       // 🔥 AQUI entra o suporte a optional / accept
       while (this.current.type === "COLON") {
         this.eat("COLON");
 
+        /*
         if (this.current.type !== "STRING") {
           throw new Error("Expected modifier name");
         }
+          */
 
         const modifier = this.current.value;
         this.eat("STRING");
