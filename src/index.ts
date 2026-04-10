@@ -2,7 +2,7 @@ import { Lexer } from "./lexer.js";
 import { Parser } from "./parser.js";
 
 const input = `
-meta:json4d[1.2]
+meta:json4d[1.3]
 {
   "Id": "number",
   "Type": "string",

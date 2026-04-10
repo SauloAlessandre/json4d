@@ -238,14 +238,13 @@ node dist/index.js
 
 ```txt
 src/
-  lexer.ts
-  parser.ts
-  binder.ts
+  *.ts
 
 tests/
   01_lexer/
   02_parser/
   03_binder/
+  04_json4d/
 
 tools/
   benchmark/
@@ -263,6 +262,7 @@ tools/
 * ✔ Nested
 * ✔ Optional
 * ✔ Accept (enum + operadores)
+* ✔ JSON4D (fromJSON + toJSON + stringfyFromJSON)
 
 ---
 

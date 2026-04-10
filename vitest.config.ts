@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: "node",
     sequence: {
-      concurrent: false // 🔥 roda em sequência
+      concurrent: false // 🔥 run in sequence
     }
   }
 });

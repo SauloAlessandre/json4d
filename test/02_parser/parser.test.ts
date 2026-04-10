@@ -17,7 +17,7 @@ describe("Parser", () => {
 
   it("should parse simple dataset", () => {
     const input = `
-    meta:json4d[1.2]
+    meta:json4d[1.3]
     {
       "Id": "number",
       "Type": "string"
@@ -36,7 +36,7 @@ describe("Parser", () => {
 
   it("should parse indexed object", () => {
     const input = `
-    meta:json4d[1.2]
+    meta:json4d[1.3]
     {
       "Id": "number",
       "Type": "string"
@@ -54,7 +54,7 @@ describe("Parser", () => {
 
   it("should parse nested arrays", () => {
     const input = `
-    meta:json4d[1.2]
+    meta:json4d[1.3]
     {
       "Id": "number",
       "orders": {

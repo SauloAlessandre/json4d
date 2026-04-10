@@ -14,9 +14,9 @@ export function bindRow(schema: Schema, row: any): DataRow {
     const result: any = {};
     const fields = Object.keys(schema);
 
-    // 🔹 função auxiliar recursiva
+    // recursive bindValue
     function bindValue(fieldSchema: FieldSchema, value: any): any {
-        // 🔥 nested array
+        // nested array
         if (fieldSchema.type === "array") {
             if (!Array.isArray(value)) {
                 throw new Error("Expected array for nested field");
@@ -27,22 +27,22 @@ export function bindRow(schema: Schema, row: any): DataRow {
             );
         }
 
-        // 🔹 tipos simples (por enquanto passthrough)
+        // simple type (passthrough)
         return value;
     }
 
     function isValidDate(value: string): boolean {
-        // formato básico YYYY-MM-DD
+        // basic format YYYY-MM-DD
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
             return false;
         }
 
         const [year, month, day] = value.split("-").map(Number);
 
-        // mês válido
+        // valid month
         if (month < 1 || month > 12) return false;
 
-        // dias por mês
+        // valid day
         const daysInMonth = new Date(year, month, 0).getDate();
 
         if (day < 1 || day > daysInMonth) return false;
@@ -60,7 +60,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
         }
     }
     function validate(fieldName: string, schema: FieldSchema, value: any) {
-        // 🔹 optional
+        // optional
         if (value === undefined || value === null) {
             if (schema.optional) return;
             throw new Error(`Field "${fieldName}" is required`);
@@ -76,7 +76,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
             }
         }
 
-        // 🔹 tipo
+        // known types
         if (schema.type === "number" && typeof value !== "number") {
             throw new Error(`Field "${fieldName}" must be a number`);
         }
@@ -85,10 +85,10 @@ export function bindRow(schema: Schema, row: any): DataRow {
             throw new Error(`Field "${fieldName}" must be a string`);
         }
 
-        // 🔹 accept (lista simples)
+        // accept (simple list)
         if (schema.accept && Array.isArray(schema.accept)) {
             for (const rule of schema.accept) {
-                // lista simples
+                // simple list
                 if (typeof rule !== "object") {
                     if (!schema.accept.includes(value)) {
                         throw new Error(`Invalid value for "${fieldName}"`);
@@ -96,7 +96,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
                     return;
                 }
 
-                // operadores
+                // operators
                 const { op, value: ref } = rule;
 
                 switch (op) {
@@ -137,7 +137,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
                 return String(value);
 
             case "date":
-                return String(value); // manter como ISO string
+                return String(value); // mantains as ISO string
 
             default:
                 return value;
@@ -167,7 +167,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
         throw new Error("Invalid row format");
     }
-    // 🔹 caso 1: array posicional
+    // case 1: positional array 
     if (Array.isArray(row)) {
         row.forEach((value, index) => {
             const fieldName = fields[index];
@@ -175,7 +175,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
             const bound = bindValue(fieldSchema, value);
             const normalized = normalizeValue(fieldSchema, bound);
-            // 🔥 validar após binding
+            // validate after binding
             validate(fieldName, fieldSchema, normalized);
 
             result[fieldName] = normalized;
@@ -184,7 +184,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
         return result;
     }
 
-    // 🔹 caso 2: objeto indexado {:0:..., :1:...}
+    // caso 2: indexed object {:0:..., :1:...}
     if (typeof row === "object") {
         Object.keys(row).forEach((key) => {
             const index = Number(key);
@@ -192,7 +192,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
             const fieldSchema = schema[fieldName];
 
             result[fieldName] = bindValue(fieldSchema, row[key]);
-            // 🔥 validar após binding
+            // validate after binding
             validate(fieldName, fieldSchema, result[fieldName]);
         });
 

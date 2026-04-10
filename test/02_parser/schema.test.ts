@@ -15,7 +15,7 @@ function parse(input: string) {
 
 it("should parse optional field", () => {
     const input = `
-      meta:json4d[1.2] {
+      meta:json4d[1.3] {
         "Date": "date" : "optional"
       }
       []
@@ -31,7 +31,7 @@ it("should parse optional field", () => {
 
 it("should parse optional with accept", () => {
     const input = `
-      meta:json4d[1.2] {
+      meta:json4d[1.3] {
         "Amount": "number" : "optional" : "accept" = [">=": 0]
       }
       []
@@ -47,7 +47,7 @@ it("should parse optional with accept", () => {
 
 it("should parse accept before optional", () => {
     const input = `
-      meta:json4d[1.2] {
+      meta:json4d[1.3] {
         "Amount": "number" : "accept" = [">=": 0] : "optional"
       }
       []
@@ -63,7 +63,7 @@ it("should parse accept before optional", () => {
 
 it("should default optional to false", () => {
     const input = `
-      meta:json4d[1.2] {
+      meta:json4d[1.3] {
         "Id": "number"
       }
       []

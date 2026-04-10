@@ -52,7 +52,7 @@ export class Parser {
 
         rules.push({ op, value });
       } else {
-        // enum simples
+        // simple enum
         rules.push(this.parseValue());
       }
 
@@ -80,10 +80,10 @@ export class Parser {
       let field: FieldSchema;
 
       function isPrimitiveType(value: any): value is "string" | "number" | "date" {
-          return value === "string" || value === "number" || value === "date";
+        return value === "string" || value === "number" || value === "date";
       }
 
-      // 🔹 caso nested
+      // nested case
       if (this.current.type === "LBRACE") {
         const children = this.parseSchema();
 
@@ -92,7 +92,7 @@ export class Parser {
           children,
         };
       } else {
-        // 🔹 tipo simples
+        // simple types
         let typeToken = this.current;
         this.eat(typeToken.type);
 
@@ -103,7 +103,7 @@ export class Parser {
 
       }
 
-      // 🔥 AQUI entra o suporte a optional / accept
+      // supporting to optional / accept
       while (this.current.type === "COLON") {
         this.eat("COLON");
 
@@ -111,18 +111,16 @@ export class Parser {
         if (this.current.type !== "STRING") {
           throw new Error("Expected modifier name");
         }
-          */
+        */
 
         const modifier = this.current.value;
         this.eat("STRING");
 
-        // 🔹 optional
         if (modifier === "optional") {
           field.optional = true;
           continue;
         }
 
-        // 🔹 accept
         if (modifier === "accept") {
           this.eat("EQUAL");
           field.accept = this.parseAccept();
@@ -132,7 +130,7 @@ export class Parser {
         throw new Error(`Unknown modifier: ${modifier}`);
       }
 
-      // 🔹 atribui ao schema
+      // add to schema
       obj[key] = field;
 
       if (this.current.type === "COMMA") {
@@ -155,7 +153,7 @@ export class Parser {
         const v = this.current.value;
         this.eat("IDENT");
 
-        // 🔥 palavras reservadas futuras
+        // reserved word
         if (v === "true") return true;
         if (v === "false") return false;
         if (v === "null") return null;

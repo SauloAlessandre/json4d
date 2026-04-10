@@ -3,11 +3,11 @@ import { Lexer } from "../../src/lexer.js";
 
 describe("Lexer", () => {
   it("should parse META token", () => {
-    const lexer = new Lexer("meta:json4d[1.2]");
+    const lexer = new Lexer("meta:json4d[1.3]");
     const token = lexer.nextToken();
 
     expect(token.type).toBe("META");
-    expect(token.value).toBe("meta:json4d[1.2]");
+    expect(token.value).toBe("meta:json4d[1.3]");
   });
 
   it("should parse IDENT", () => {
@@ -26,11 +26,11 @@ describe("Lexer", () => {
     expect(token.value).toBe("123");
   });
   it("should parse META with linenumber", () => {
-    const lexer = new Lexer("12: meta:json4d[1.2]");
+    const lexer = new Lexer("12: meta:json4d[1.3]");
     const token = lexer.nextToken();
 
     expect(token.type).toBe("META");
-    expect(token.value).toBe("meta:json4d[1.2]");
+    expect(token.value).toBe("meta:json4d[1.3]");
   });
   it("should parse array tokens", () => {
     const lexer = new Lexer("[1, crypto]");
@@ -72,7 +72,7 @@ describe("Lexer", () => {
   });
   it("should ignore line numbers", () => {
     const lexer = new Lexer(`
-    0: meta:json4d[1.2]
+    0: meta:json4d[1.3]
   `);
 
     const token = lexer.nextToken();

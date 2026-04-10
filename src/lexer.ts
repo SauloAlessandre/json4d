@@ -39,19 +39,19 @@ export class Lexer {
   }
 
   /**
-   * 🔥 Ignora:
-   * - espaços
-   * - quebras de linha
-   * - prefixo "n:"
+   * Ignore:
+   * - spaces
+   * - new lines
+   * - prefix "n:"
    */
   private skipIgnored() {
     while (true) {
-      // 🔹 pular espaços e quebras de linha
+      // skip spaces and NL
       while (this.peek() && /\s/.test(this.peek()!)) {
         this.pos++;
       }
 
-      // 🔹 verificar início de linha "lógico"
+      // verify logical start line
       let i = this.pos - 1;
       let isLineStart = true;
 
@@ -67,7 +67,7 @@ export class Lexer {
         i--;
       }
 
-      // 🔹 remover prefixo "n:" apenas no início da linha
+      // remove prefix "n:" only on line start
       const rest = this.input.slice(this.pos);
       const match = rest.match(/^\d+:\s*/);
 
@@ -86,7 +86,7 @@ export class Lexer {
 
     if (!c) return { type: "EOF" };
 
-    // 🔥 META (precisa vir antes de IDENT)
+    // META (needs to become before IDENT)
     if (this.input.startsWith("meta:", this.pos)) {
       let value = "";
 
@@ -97,7 +97,7 @@ export class Lexer {
       return { type: "META", value };
     }
 
-    // símbolos
+    // symbols
     if (c === "{") return this.pos++, { type: "LBRACE" };
     if (c === "}") return this.pos++, { type: "RBRACE" };
     if (c === "[") return this.pos++, { type: "LBRACKET" };
@@ -108,7 +108,7 @@ export class Lexer {
 
     // STRING
     if (c === '"') {
-      this.pos++; // consumir abertura
+      this.pos++; // consume opening
       let value = "";
 
       while (this.peek() && this.peek() !== '"') {
@@ -119,7 +119,7 @@ export class Lexer {
         throw new Error("Unterminated string");
       }
 
-      this.pos++; // consumir fechamento
+      this.pos++; // consume closing
 
       return { type: "STRING", value };
     }
