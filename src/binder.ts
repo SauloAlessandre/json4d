@@ -49,6 +49,9 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
         return true;
     }
+    function isValidDateTime(value: string): boolean {
+        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(value);
+    }
     function applyOperator(op: string, value: any, ref: any): boolean {
         switch (op) {
             case ">": return value > ref;
@@ -73,6 +76,14 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
             if (!isValidDate(value)) {
                 throw new Error(`Field "${fieldName}" has invalid date: ${value}`);
+            }
+        } else if (schema.type === "datetime") {
+            if (typeof value !== "string") {
+                throw new Error(`Field "${fieldName}" must be a datetime string`);
+            }
+
+            if (!isValidDateTime(value)) {
+                throw new Error(`Field "${fieldName}" has invalid datetime: ${value}`);
             }
         }
 
@@ -137,6 +148,9 @@ export function bindRow(schema: Schema, row: any): DataRow {
                 return String(value);
 
             case "date":
+                return String(value); // mantains as ISO string
+
+            case "datetime":
                 return String(value); // mantains as ISO string
 
             default:

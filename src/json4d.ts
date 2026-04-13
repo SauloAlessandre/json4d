@@ -117,9 +117,15 @@ export class JSON4D {
     private static getType(value: any): "string" | "number" | "date" | "array" {
         if (Array.isArray(value)) { return "array"; }
 
-        if (typeof value === "number") { return "number"; }
+        if (typeof value === "number") {
+            return "number";
+        }
 
         if (typeof value === "string") {
+            // detect datetime first ISO YYYY-MM-DDT
+            if (/^\d{4}-\d{2}-\d{2}T/.test(value)) {
+                return "datetime";
+            }
             // detect ISO YYYY-MM-DD
             if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
                 return "date";
@@ -227,6 +233,9 @@ export class JSON4D {
                 return `"${value}"`;
 
             case "date":
+                return value; // format YYYY-MM-DD
+
+            case "datetime":
                 return value; // format YYYY-MM-DD
 
             case "number":

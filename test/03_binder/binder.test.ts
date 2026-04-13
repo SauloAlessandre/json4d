@@ -3,6 +3,7 @@ import { bindData } from "../../src/binder.js";
 
 describe("Binder", () => {
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind positional row", () => {
     const schema = {
       Id: { type: "number" },
@@ -18,7 +19,7 @@ describe("Binder", () => {
       Type: "crypto"
     });
   });
-
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind indexed row", () => {
     const schema = {
       Id: { type: "number" },
@@ -34,6 +35,7 @@ describe("Binder", () => {
       Type: "stock"
     });
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind positional row", () => {
     const schema = {
       Id: { type: "number" },
@@ -49,6 +51,7 @@ describe("Binder", () => {
       Type: "crypto"
     });
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind indexed row", () => {
     const schema = {
       Id: { type: "number" },
@@ -64,6 +67,7 @@ describe("Binder", () => {
       Type: "stock"
     });
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind nested array", () => {
     const schema = {
       Id: { type: "number" },
@@ -99,6 +103,7 @@ describe("Binder", () => {
       ]
     });
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should bind nested with positional inner rows", () => {
     const schema = {
       Id: { type: "number" },
@@ -131,6 +136,7 @@ describe("Binder", () => {
       ]
     });
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should throw if nested is not array", () => {
     const schema = {
       orders: {
@@ -147,6 +153,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should validate numeric range", () => {
     const schema = {
       Amount: {
@@ -164,6 +171,7 @@ describe("Binder", () => {
 
     expect(result[0].Amount).toBe(50);
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject value below range", () => {
     const schema = {
       Amount: {
@@ -178,6 +186,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should validate enum values", () => {
     const schema = {
       Type: {
@@ -192,6 +201,7 @@ describe("Binder", () => {
 
     expect(result[0].Type).toBe("buy");
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject invalid enum", () => {
     const schema = {
       Type: {
@@ -204,6 +214,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should validate valid date", () => {
     const schema = {
       Date: { type: "date" }
@@ -215,6 +226,29 @@ describe("Binder", () => {
 
     expect(result[0].Date).toBe("2026-01-01");
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should accept valid datetime", () => {
+    const schema = {
+      CreatedAt: { type: "datetime" }
+    };
+
+    const data = [["2026-01-01T10:30:00Z"]];
+
+    const result = bindData(schema, data);
+
+    expect(result[0].CreatedAt).toBe("2026-01-01T10:30:00Z");
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should reject invalid datetime", () => {
+    const schema = {
+      CreatedAt: { type: "datetime" }
+    };
+
+    const data = [["2026-01-01 10:30:00"]]; // sem TZ
+
+    expect(() => bindData(schema, data)).toThrow();
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject invalid month", () => {
     const schema = {
       Date: { type: "date" }
@@ -224,6 +258,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject invalid day", () => {
     const schema = {
       Date: { type: "date" }
@@ -233,6 +268,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should accept leap year date", () => {
     const schema = {
       Date: { type: "date" }
@@ -244,6 +280,7 @@ describe("Binder", () => {
 
     expect(result[0].Date).toBe("2024-02-29");
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should normalize string to number", () => {
     const schema = {
       Amount: { type: "number" }
@@ -255,6 +292,7 @@ describe("Binder", () => {
 
     expect(result[0].Amount).toBe(50);
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should normalize date as string", () => {
     const schema = {
       Date: { type: "date" }
@@ -266,6 +304,7 @@ describe("Binder", () => {
 
     expect(result[0].Date).toBe("2026-01-01");
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should normalize string", () => {
     const schema = {
       Name: { type: "string" }
@@ -277,79 +316,80 @@ describe("Binder", () => {
 
     expect(result[0].Name).toBe("123");
   });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should accept valid enum", () => {
+    const schema = {
+      Type: {
+        type: "string",
+        accept: ["buy", "sell"]
+      }
+    };
+
+    const data = [["buy"]];
+
+    const result = bindData(schema, data);
+
+    expect(result[0].Type).toBe("buy");
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should reject invalid enum", () => {
+    const schema = {
+      Type: {
+        type: "string",
+        accept: ["buy", "sell"]
+      }
+    };
+
+    const data = [["hold"]];
+
+    expect(() => bindData(schema, data)).toThrow();
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should accept value within range", () => {
+    const schema = {
+      Amount: {
+        type: "number",
+        accept: [
+          { op: ">=", value: 0 },
+          { op: "<=", value: 100 }
+        ]
+      }
+    };
+
+    const data = [[50]];
+
+    const result = bindData(schema, data);
+
+    expect(result[0].Amount).toBe(50);
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should reject value below minimum", () => {
+    const schema = {
+      Amount: {
+        type: "number",
+        accept: [
+          { op: ">=", value: 0 }
+        ]
+      }
+    };
+
+    const data = [[-1]];
+
+    expect(() => bindData(schema, data)).toThrow();
+  });
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  it("should reject value above maximum", () => {
+    const schema = {
+      Amount: {
+        type: "number",
+        accept: [
+          { op: "<=", value: 100 }
+        ]
+      }
+    };
+
+    const data = [[200]];
+
+    expect(() => bindData(schema, data)).toThrow();
+  });
 });
-it("should accept valid enum", () => {
-  const schema = {
-    Type: {
-      type: "string",
-      accept: ["buy", "sell"]
-    }
-  };
-
-  const data = [["buy"]];
-
-  const result = bindData(schema, data);
-
-  expect(result[0].Type).toBe("buy");
-});
-it("should reject invalid enum", () => {
-  const schema = {
-    Type: {
-      type: "string",
-      accept: ["buy", "sell"]
-    }
-  };
-
-  const data = [["hold"]];
-
-  expect(() => bindData(schema, data)).toThrow();
-});
-
-it("should accept value within range", () => {
-  const schema = {
-    Amount: {
-      type: "number",
-      accept: [
-        { op: ">=", value: 0 },
-        { op: "<=", value: 100 }
-      ]
-    }
-  };
-
-  const data = [[50]];
-
-  const result = bindData(schema, data);
-
-  expect(result[0].Amount).toBe(50);
-});
-
-it("should reject value below minimum", () => {
-  const schema = {
-    Amount: {
-      type: "number",
-      accept: [
-        { op: ">=", value: 0 }
-      ]
-    }
-  };
-
-  const data = [[-1]];
-
-  expect(() => bindData(schema, data)).toThrow();
-});
-
-it("should reject value above maximum", () => {
-  const schema = {
-    Amount: {
-      type: "number",
-      accept: [
-        { op: "<=", value: 100 }
-      ]
-    }
-  };
-
-  const data = [[200]];
-
-  expect(() => bindData(schema, data)).toThrow();
-});
-

@@ -5,7 +5,7 @@
  */
 
 import { Lexer, Token } from "./lexer.js";
-import { FieldSchema, Schema } from "./type.js";
+import { FieldSchema, PrimitiveType, Schema } from "./type.js";
 
 export class Parser {
   private current: Token;
@@ -79,8 +79,8 @@ export class Parser {
 
       let field: FieldSchema;
 
-      function isPrimitiveType(value: any): value is "string" | "number" | "date" {
-        return value === "string" || value === "number" || value === "date";
+      function isPrimitiveType(value: any): value is PrimitiveType {
+        return value === "string" || value === "number" || value === "date" || value == "datetime";
       }
 
       // nested case

@@ -140,6 +140,7 @@ Represents structured arrays:
 * `number`
 * `string`
 * `date`
+* `datetime`
 * `array` (implicit via nested)
 
 ---

@@ -14,7 +14,7 @@ export type AcceptRule =
   | { op: Operator; value: any };
 
 // supported primitive types
-export type PrimitiveType = "string" | "number" | "date";
+export type PrimitiveType = "string" | "number" | "date" | "datetime";
 
 // simple field schema
 export interface BaseFieldSchema {
