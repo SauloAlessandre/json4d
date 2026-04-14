@@ -2,12 +2,15 @@
  * project: json4d
  * 
  * class JSON4D
+ * 
  */
 
 import { bindData, bindRow } from "./binder.js";
+import { JSON4DDataSet } from "./dataset.js";
 import { Lexer } from "./lexer.js";
 import { Parser } from "./parser.js";
-import { DataRow, DataSet, FieldSchema, Schema } from "./type.js";
+import { DataRow, DataSet, FieldSchema, PrimitiveType, Schema, SupportedType } from "./type.js";
+import { objectToIndexed } from "./util.js";
 
 export class JSON4D {
     private _header: string;
@@ -54,6 +57,10 @@ export class JSON4D {
         return this.stringify(result.schema, result.data);
     }
 
+    static createDataSet(schema: Schema, data: DataRow[] = []) {
+        return new JSON4DDataSet(schema, data);
+    }
+
     static fromJSON(data: any[], schema?: Schema) {
         if (!Array.isArray(data)) {
             throw new Error("Input JSON must be an array");
@@ -61,7 +68,7 @@ export class JSON4D {
         const finalSchema: Schema = schema ?? this.inferSchema(data);
 
         const result = data.map((row) => {
-            return bindRow(finalSchema, this.objectToIndexed(finalSchema, row));
+            return bindRow(finalSchema, objectToIndexed(finalSchema, row));
         });
         return { schema: finalSchema, data: data };
     }
@@ -114,8 +121,10 @@ export class JSON4D {
         return { type };
     }
 
-    private static getType(value: any): "string" | "number" | "date" | "array" {
-        if (Array.isArray(value)) { return "array"; }
+    private static getType(value: any): SupportedType {
+        if (Array.isArray(value)) { 
+            return "array"; 
+        }
 
         if (typeof value === "number") {
             return "number";
@@ -135,29 +144,6 @@ export class JSON4D {
         }
 
         return "string";
-    }
-
-    private static objectToIndexed(schema: Schema, obj: any): any {
-        const result: any = {};
-        const fields = Object.keys(schema);
-
-        fields.forEach((field, index) => {
-            const fieldSchema = schema[field];
-            const value = obj[field];
-
-            if (value === undefined) {
-                return;
-            }
-
-            if (fieldSchema.type === "array") {
-                result[index] = value.map((v: any) =>
-                    this.objectToIndexed(fieldSchema.children, v)
-                );
-            } else {
-                result[index] = value;
-            }
-        });
-        return result;
     }
 
     static stringifySchema(schema: Schema, indent = 2): string {

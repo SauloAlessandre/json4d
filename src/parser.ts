@@ -23,7 +23,7 @@ export class Parser {
 
   parseHeader() {
     if (this.current.type !== "META") {
-      throw new Error("Expected meta header");
+      throw new Error(`Expected meta header at ${this.current.line}:${this.current.column}`);
     }
 
     const raw = this.current.value!;
@@ -97,7 +97,7 @@ export class Parser {
         this.eat(typeToken.type);
 
         if (!isPrimitiveType(typeToken.value)) {
-          throw new Error(`Invalid type: ${typeToken.value}`);
+          throw new Error(`Invalid type: ${typeToken.value} at ${this.current.line}:${this.current.column}`);
         }
         field = { type: typeToken.value };
 
@@ -127,7 +127,7 @@ export class Parser {
           continue;
         }
 
-        throw new Error(`Unknown modifier: ${modifier}`);
+        throw new Error(`Unknown modifier: ${modifier} at ${this.current.line}:${this.current.column}`);
       }
 
       // add to schema
@@ -180,7 +180,7 @@ export class Parser {
 
       default:
         console.error("TOKEN inesperado:", this.current);
-        throw new Error(`Unexpected value token ${this.current.type}`);
+        throw new Error(`Unexpected value token ${this.current.type} at ${this.current.line}:${this.current.column}`);
     }
   }
 

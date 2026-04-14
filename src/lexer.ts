@@ -1,3 +1,10 @@
+/**
+ * project: json4d
+ * 
+ * class Lexer
+ * 
+ */
+
 export type TokenType =
   | "NUMBER"
   | "STRING"
@@ -14,11 +21,15 @@ export type TokenType =
 
 export interface Token {
   type: TokenType;
+  line: number;
+  column: number;
   value?: string;
 }
 
 export class Lexer {
   private pos = 0;
+  private line = 1;
+  private column = 1;
 
   constructor(private input: string) { }
 
@@ -27,7 +38,16 @@ export class Lexer {
   }
 
   private next(): string {
-    return this.input[this.pos++]!;
+    const ch = this.input[this.pos++];
+
+    if (ch === "\n") {
+      this.line++;
+      this.column = 1;
+    } else {
+      this.column++;
+    }
+
+    return ch;
   }
 
   private isAlpha(c: string) {
@@ -79,12 +99,16 @@ export class Lexer {
       break;
     }
   }
+  token(name: any, value: any = null): Token {
+    return { type: name, line: this.line, column: this.column, value: value };
+  }
+
   nextToken(): Token {
     this.skipIgnored();
 
     const c = this.peek();
 
-    if (!c) return { type: "EOF" };
+    if (!c) return this.token("EOF"); // { type: "EOF" };
 
     // META (needs to become before IDENT)
     if (this.input.startsWith("meta:", this.pos)) {
@@ -94,17 +118,17 @@ export class Lexer {
         value += this.next();
       }
 
-      return { type: "META", value };
+      return this.token("META", value); //{ type: "META", value };
     }
 
     // symbols
-    if (c === "{") return this.pos++, { type: "LBRACE" };
-    if (c === "}") return this.pos++, { type: "RBRACE" };
-    if (c === "[") return this.pos++, { type: "LBRACKET" };
-    if (c === "]") return this.pos++, { type: "RBRACKET" };
-    if (c === ":") return this.pos++, { type: "COLON" };
-    if (c === ",") return this.pos++, { type: "COMMA" };
-    if (c === "=") return this.pos++, { type: "EQUAL" };
+    if (c === "{") return this.pos++, this.token("LBRACE"); //{ type: "LBRACE" };
+    if (c === "}") return this.pos++, this.token("RBRACE"); //{ type: "RBRACE" };
+    if (c === "[") return this.pos++, this.token("LBRACKET"); //{ type: "LBRACKET" };
+    if (c === "]") return this.pos++, this.token("RBRACKET"); //{ type: "RBRACKET" };
+    if (c === ":") return this.pos++, this.token("COLON"); //{ type: "COLON" };
+    if (c === ",") return this.pos++, this.token("COMMA"); //{ type: "COMMA" };
+    if (c === "=") return this.pos++, this.token("EQUAL"); //{ type: "EQUAL" };
 
     // STRING
     if (c === '"') {
@@ -121,7 +145,7 @@ export class Lexer {
 
       this.pos++; // consume closing
 
-      return { type: "STRING", value };
+      return this.token("STRING", value); //{ type: "STRING", value };
     }
 
     // NUMBER (ou DATE)
@@ -132,7 +156,7 @@ export class Lexer {
         value += this.next();
       }
 
-      return { type: "NUMBER", value };
+      return this.token("NUMBER", value); //{ type: "NUMBER", value };
     }
 
     // IDENT
@@ -143,7 +167,7 @@ export class Lexer {
         value += this.next();
       }
 
-      return { type: "IDENT", value };
+      return this.token("IDENT", value); //{ type: "IDENT", value };
     }
 
     throw new Error(`Unexpected char: ${c}`);

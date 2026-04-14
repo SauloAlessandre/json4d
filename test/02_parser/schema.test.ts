@@ -13,6 +13,7 @@ function parse(input: string) {
     };
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 it("should parse optional field", () => {
     const input = `
       meta:json4d[1.3] {
@@ -29,6 +30,7 @@ it("should parse optional field", () => {
 
 });
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 it("should parse optional with accept", () => {
     const input = `
       meta:json4d[1.3] {
@@ -45,6 +47,7 @@ it("should parse optional with accept", () => {
     });
 });
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 it("should parse accept before optional", () => {
     const input = `
       meta:json4d[1.3] {
@@ -61,6 +64,7 @@ it("should parse accept before optional", () => {
     });
 });
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 it("should default optional to false", () => {
     const input = `
       meta:json4d[1.3] {

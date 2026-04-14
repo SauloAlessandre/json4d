@@ -2,6 +2,7 @@
  * project: json4d
  * 
  * types for json4d
+ * 
  */
 
 // supported operators
@@ -16,9 +17,12 @@ export type AcceptRule =
 // supported primitive types
 export type PrimitiveType = "string" | "number" | "date" | "datetime";
 
+// supported types
+export type SupportedType = PrimitiveType | "array";
+
 // simple field schema
 export interface BaseFieldSchema {
-  type: PrimitiveType | "array";
+  type: SupportedType;
   optional?: boolean;
   accept?: AcceptRule[];
 }
@@ -41,18 +45,3 @@ export type DataRow = Record<string, any>;
 
 export type DataSet = DataRow[];
 
-/*
-type AcceptRule =
-    | string
-    | { op: ">" | "<" | ">=" | "<="; value: any };
-
-type FieldSchema = {
-    type: string;
-    optional?: boolean;
-    accept?: AcceptRule[];
-    children?: Schema;
-};
-
-type Schema = Record<string, FieldSchema>;
-
-*/

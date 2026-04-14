@@ -285,12 +285,26 @@ npx tsx benchmark.ts 1000
 
 ## 🚧 Roadmap
 
+* [x] v1.0
+      - implemented lexer, parser and binder for default types:
+          - string, number and date
+* [x] v1.1
+      - add support to indexed fields
+      - add support to optional fields
+      - add support to valdation types, now we have:
+          - "Type": "string" : "accept" = ["buy", "sell"]
+* [x] v1.2
+      - add support to validation types, operators ('>', '<', '>=' and '<='), now we have:
+          - "Amount": "number" : "accept" = [">=": 0, "<=": 100]
+      - add support to nested objects
+* [x] v1.3
+      - add support to Datetime
+      - add validation to required fields
 * [ ] Error messagers with row/column
-* [ ] Datetime support
 * [ ] Default Values
 * [ ] Custom types
 * [ ] Serialization (writer)
-* [ ] Compact
+* [ ] Compress/Decompress zstd
 * [ ] Integrity (hash)
 
 ---
