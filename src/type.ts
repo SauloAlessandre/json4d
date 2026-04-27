@@ -45,3 +45,27 @@ export type DataRow = Record<string, any>;
 
 export type DataSet = DataRow[];
 
+export type TokenType =
+  | "NUMBER"
+  | "STRING"
+  | "IDENT"
+  | "LBRACE"
+  | "RBRACE"
+  | "LBRACKET"
+  | "RBRACKET"
+  | "COLON"
+  | "COMMA"
+  | "EQUAL"
+  | "META"
+  | "EOF";
+
+export interface TokenPosition {
+  line: number;
+  column: number;
+}
+
+export interface Token {
+  type: TokenType;
+  location: TokenPosition;
+  value?: string;
+}

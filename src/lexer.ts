@@ -5,31 +5,11 @@
  * 
  */
 
-export type TokenType =
-  | "NUMBER"
-  | "STRING"
-  | "IDENT"
-  | "LBRACE"
-  | "RBRACE"
-  | "LBRACKET"
-  | "RBRACKET"
-  | "COLON"
-  | "COMMA"
-  | "EQUAL"
-  | "META"
-  | "EOF";
-
-export interface Token {
-  type: TokenType;
-  line: number;
-  column: number;
-  value?: string;
-}
+import { TokenType, Token, TokenPosition } from "./type.js";;
 
 export class Lexer {
   private pos = 0;
-  private line = 1;
-  private column = 1;
+  private loc: TokenPosition = { line: 1, column: 1 };
 
   constructor(private input: string) { }
 
@@ -41,10 +21,10 @@ export class Lexer {
     const ch = this.input[this.pos++];
 
     if (ch === "\n") {
-      this.line++;
-      this.column = 1;
+      this.loc.line++;
+      this.loc.column = 1;
     } else {
-      this.column++;
+      this.loc.column++;
     }
 
     return ch;
@@ -68,7 +48,8 @@ export class Lexer {
     while (true) {
       // skip spaces and NL
       while (this.peek() && /\s/.test(this.peek()!)) {
-        this.pos++;
+        //this.pos++;
+        this.next();
       }
 
       // verify logical start line
@@ -99,8 +80,9 @@ export class Lexer {
       break;
     }
   }
-  token(name: any, value: any = null): Token {
-    return { type: name, line: this.line, column: this.column, value: value };
+
+  token(name: any, value: any = null, pos: TokenPosition = { line: 0, column: 0 }): Token {
+    return { type: name, value: value, location: pos };
   }
 
   nextToken(): Token {
@@ -118,20 +100,30 @@ export class Lexer {
         value += this.next();
       }
 
-      return this.token("META", value); //{ type: "META", value };
+      return this.token("META", value);
     }
 
+    const loc = { ...this.loc };
+
     // symbols
-    if (c === "{") return this.pos++, this.token("LBRACE"); //{ type: "LBRACE" };
-    if (c === "}") return this.pos++, this.token("RBRACE"); //{ type: "RBRACE" };
-    if (c === "[") return this.pos++, this.token("LBRACKET"); //{ type: "LBRACKET" };
-    if (c === "]") return this.pos++, this.token("RBRACKET"); //{ type: "RBRACKET" };
-    if (c === ":") return this.pos++, this.token("COLON"); //{ type: "COLON" };
-    if (c === ",") return this.pos++, this.token("COMMA"); //{ type: "COMMA" };
-    if (c === "=") return this.pos++, this.token("EQUAL"); //{ type: "EQUAL" };
+    if (c === "{") 
+      return this.pos++, this.token("LBRACE", 0, { ...this.loc });
+    if (c === "}") 
+      return this.pos++, this.token("RBRACE", 0, { ...this.loc });
+    if (c === "[") 
+      return this.pos++, this.token("LBRACKET", 0, { ...this.loc }); 
+    if (c === "]") 
+      return this.pos++, this.token("RBRACKET", 0, { ...this.loc }); 
+    if (c === ":") 
+      return this.pos++, this.token("COLON", 0, { ...this.loc }); 
+    if (c === ",") 
+      return this.pos++, this.token("COMMA", 0, { ...this.loc }); 
+    if (c === "=") 
+      return this.pos++, this.token("EQUAL", 0, { ...this.loc }); 
 
     // STRING
     if (c === '"') {
+      const loc = { ...this.loc };
       this.pos++; // consume opening
       let value = "";
 
@@ -140,36 +132,37 @@ export class Lexer {
       }
 
       if (!this.peek()) {
-        throw new Error("Unterminated string");
+        throw new Error(`Unterminated string at ${loc.line}:${loc.column}`);
       }
 
       this.pos++; // consume closing
 
-      return this.token("STRING", value); //{ type: "STRING", value };
+      return this.token("STRING", value, loc);
     }
 
     // NUMBER (ou DATE)
     if (this.isDigit(c)) {
+      const loc = { ...this.loc };
       let value = "";
 
       while (this.peek() && /[0-9\-\.]/.test(this.peek()!)) {
         value += this.next();
       }
 
-      return this.token("NUMBER", value); //{ type: "NUMBER", value };
+      return this.token("NUMBER", value, loc);
     }
 
     // IDENT
     if (this.isAlpha(c)) {
+      const loc = { ...this.loc };
       let value = "";
 
       while (this.peek() && /[a-zA-Z0-9_.]/.test(this.peek()!)) {
         value += this.next();
       }
-
-      return this.token("IDENT", value); //{ type: "IDENT", value };
+      return this.token("IDENT", value, loc); //{ type: "IDENT", value };
     }
 
-    throw new Error(`Unexpected char: ${c}`);
+    throw new Error(`Unexpected char: ${c} at ${loc.line}:${loc.column}`);
   }
 }

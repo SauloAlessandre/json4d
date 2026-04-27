@@ -2,9 +2,11 @@
  * project: json4d
  * 
  * class parser
+ * 
  */
 
-import { Lexer, Token } from "./lexer.js";
+import { Lexer } from "./lexer.js";
+import { Token } from "./type.js";
 import { FieldSchema, PrimitiveType, Schema } from "./type.js";
 
 export class Parser {
@@ -21,9 +23,13 @@ export class Parser {
     this.current = this.lexer.nextToken();
   }
 
+  private location() {
+    return `${this.current.location.line}:${this.current.location.column}`;
+  }
   parseHeader() {
     if (this.current.type !== "META") {
-      throw new Error(`Expected meta header at ${this.current.line}:${this.current.column}`);
+      const loc = this.location();
+      throw new Error(`Expected meta header at ${loc}`);
     }
 
     const raw = this.current.value!;
@@ -97,7 +103,8 @@ export class Parser {
         this.eat(typeToken.type);
 
         if (!isPrimitiveType(typeToken.value)) {
-          throw new Error(`Invalid type: ${typeToken.value} at ${this.current.line}:${this.current.column}`);
+          const loc = this.location();
+          throw new Error(`Invalid type: ${typeToken.value} at ${loc}`);
         }
         field = { type: typeToken.value };
 
@@ -127,7 +134,8 @@ export class Parser {
           continue;
         }
 
-        throw new Error(`Unknown modifier: ${modifier} at ${this.current.line}:${this.current.column}`);
+        const loc = this.location();
+        throw new Error(`Unknown modifier: ${modifier} at ${loc}`);
       }
 
       // add to schema
@@ -180,7 +188,8 @@ export class Parser {
 
       default:
         console.error("TOKEN inesperado:", this.current);
-        throw new Error(`Unexpected value token ${this.current.type} at ${this.current.line}:${this.current.column}`);
+        const loc = this.location();
+        throw new Error(`Unexpected value token ${this.current.type} at ${loc}`);
     }
   }
 

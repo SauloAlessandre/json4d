@@ -5,7 +5,7 @@
  * 
  */
 
-import { DataRow, DataSet, FieldSchema, Schema } from "./type.js";
+import { DataRow, DataSet, FieldSchema, Schema, TokenPosition } from "./type.js";
 
 export function bindData(schema: Schema, data: any[]): DataSet {
     return data.map((row) => bindRow(schema, row));
@@ -42,31 +42,31 @@ export function bindRow(schema: Schema, row: any): DataRow {
         }
     }
 
-    function validate(fieldName: string, schema: FieldSchema, value: any) {
+    function validate(fieldName: string, schema: FieldSchema, value: any, loc: TokenPosition) {
         // required / optional
         if (value === undefined || value === null) {
             if (schema.optional) return;
-            throw new Error(`Field "${fieldName}" is required`);
+            throw new Error(`Field "${fieldName}" is required at ${loc.line}:${loc.column}`);
         }
 
         // type validation
         if (schema.type === "number" && typeof value !== "number") {
-            throw new Error(`Field "${fieldName}" must be a number`);
+            throw new Error(`Field "${fieldName}" must be a number at ${loc.line}:${loc.column}`);
         }
 
         if (schema.type === "string" && typeof value !== "string") {
-            throw new Error(`Field "${fieldName}" must be a string`);
+            throw new Error(`Field "${fieldName}" must be a string at ${loc.line}:${loc.column}`);
         }
 
         if (schema.type === "date") {
             if (typeof value !== "string" || !isValidDate(value)) {
-                throw new Error(`Field "${fieldName}" has invalid date: ${value}`);
+                throw new Error(`Field "${fieldName}" has invalid date: ${value} at ${loc.line}:${loc.column}`);
             }
         }
 
         if (schema.type === "datetime") {
             if (typeof value !== "string" || !isValidDateTime(value)) {
-                throw new Error(`Field "${fieldName}" has invalid datetime: ${value}`);
+                throw new Error(`Field "${fieldName}" has invalid datetime: ${value} at ${loc.line}:${loc.column}`);
             }
         }
 
@@ -76,7 +76,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
             if (simpleValues.length > 0) {
                 if (!simpleValues.includes(value)) {
-                    throw new Error(`Invalid value for "${fieldName}"`);
+                    throw new Error(`Invalid value for "${fieldName}" at ${loc.line}:${loc.column}`);
                 }
             }
 
@@ -85,7 +85,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
                     const { op, value: ref } = rule;
 
                     if (!applyOperator(op, value, ref)) {
-                        throw new Error(`${fieldName} must be ${op} ${ref}`);
+                        throw new Error(`${fieldName} must be ${op} ${ref} at  ${loc.line}:${loc.column}`);
                     }
                 }
             }
@@ -123,7 +123,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
         return value;
     }
 
-    function bindNormalize(index: number, value: any) {
+    function bindNormalize(index: number, raw: any) {
         const fieldName = fields[index];
 
         if (fieldName === undefined) {
@@ -131,13 +131,40 @@ export function bindRow(schema: Schema, row: any): DataRow {
         }
 
         const fieldSchema = schema[fieldName];
-
+        const { value, location } = unwrapValue(raw);
         const bound = bindValue(fieldSchema, value);
         const normalized = normalizeValue(fieldSchema, bound);
 
-        validate(fieldName, fieldSchema, normalized);
+        validate(fieldName, fieldSchema, normalized, location);
 
         return { fieldName, normalized };
+    }
+
+    function unwrapValue(input: any) {
+        if (
+            input &&
+            typeof input === "object" &&
+            "value" in input &&
+            "line" in input &&
+            "column" in input
+        ) {
+            return {
+                value: input.value,
+                location: {
+                    line: input.line,
+                    column: input.column
+                }
+            };
+        }
+
+        // fallback (sem posição)
+        return {
+            value: input,
+            location: {
+                line: 0,
+                column: 0
+            }
+        };
     }
 
     function testMissingFields() {
