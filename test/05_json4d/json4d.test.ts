@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import { JSON4D } from "../../src/json4d.js";
-import { JSON4DDataSet } from "../../src/dataset.js";
 
 const default_meta = "meta:json4d[1.3] {\n";
 const default_header = `<CR>"Id": "number",\n<CR>"Type": "string"\n}\n`;
@@ -226,4 +225,5 @@ it("should reject invalid value on push", () => {
     ds.push({ Amount: 1, Tax: 5 }); // inválido
   }).toThrow();
 });
+
 

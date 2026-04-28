@@ -6,10 +6,12 @@
  */
 
 import { bindData, bindRow } from "./binder.js";
+import { loadFromCSV } from "./csv.js";
 import { JSON4DDataSet } from "./dataset.js";
+import { JSON4DTable } from "./type.js";
 import { Lexer } from "./lexer.js";
 import { Parser } from "./parser.js";
-import { DataRow, DataSet, FieldSchema, PrimitiveType, Schema, SupportedType } from "./type.js";
+import { CSVOptions, DataRow, DataSet, FieldSchema, PrimitiveType, Schema, SupportedType } from "./type.js";
 import { objectToIndexed } from "./util.js";
 
 export class JSON4D {
@@ -122,8 +124,8 @@ export class JSON4D {
     }
 
     private static getType(value: any): SupportedType {
-        if (Array.isArray(value)) { 
-            return "array"; 
+        if (Array.isArray(value)) {
+            return "array";
         }
 
         if (typeof value === "number") {
@@ -230,5 +232,15 @@ export class JSON4D {
             default:
                 return JSON.stringify(value);
         }
+    }
+
+    static fromCSV(csv: string, options?: CSVOptions): JSON4DTable {
+        const { schema: inferredSchema, data } = loadFromCSV(csv, options);
+
+        const finalSchema = options?.schema ?? inferredSchema;
+
+        const bound = data.map(row => bindRow(finalSchema, row));
+
+        return { schema: finalSchema, data: bound };
     }
 }

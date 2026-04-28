@@ -6,6 +6,7 @@
  */
 
 import { DataRow, DataSet, FieldSchema, Schema, TokenPosition } from "./type.js";
+import { isValidDate, isValidDateTime, normalizeValue } from "./util.js";
 
 export function bindData(schema: Schema, data: any[]): DataSet {
     return data.map((row) => bindRow(schema, row));
@@ -14,22 +15,6 @@ export function bindData(schema: Schema, data: any[]): DataSet {
 export function bindRow(schema: Schema, row: any): DataRow {
     const result: DataRow = {};
     const fields = Object.keys(schema);
-
-    function isValidDate(value: string): boolean {
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
-        const [year, month, day] = value.split("-").map(Number);
-
-        if (month < 1 || month > 12) return false;
-
-        const daysInMonth = new Date(year, month, 0).getDate();
-
-        return day >= 1 && day <= daysInMonth;
-    }
-
-    function isValidDateTime(value: string): boolean {
-        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/.test(value);
-    }
 
     function applyOperator(op: string, value: any, ref: any): boolean {
         switch (op) {
@@ -50,10 +35,11 @@ export function bindRow(schema: Schema, row: any): DataRow {
         }
 
         // type validation
-        if (schema.type === "number" && typeof value !== "number") {
-            throw new Error(`Field "${fieldName}" must be a number at ${loc.line}:${loc.column}`);
+        if (schema.type === "number") {
+            if (typeof value !== "number" || Number.isNaN(value)) {
+                throw new Error(`Field "${fieldName}" must be a number at ${loc.line}:${loc.column}`);
+            }
         }
-
         if (schema.type === "string" && typeof value !== "string") {
             throw new Error(`Field "${fieldName}" must be a string at ${loc.line}:${loc.column}`);
         }
@@ -66,6 +52,7 @@ export function bindRow(schema: Schema, row: any): DataRow {
 
         if (schema.type === "datetime") {
             if (typeof value !== "string" || !isValidDateTime(value)) {
+                console.log("typeof ", typeof value, "value", value);
                 throw new Error(`Field "${fieldName}" has invalid datetime: ${value} at ${loc.line}:${loc.column}`);
             }
         }
@@ -89,23 +76,6 @@ export function bindRow(schema: Schema, row: any): DataRow {
                     }
                 }
             }
-        }
-    }
-
-    function normalizeValue(schema: FieldSchema, value: any): any {
-        if (value === undefined || value === null) return value;
-
-        switch (schema.type) {
-            case "number":
-                return Number(value);
-
-            case "string":
-            case "date":
-            case "datetime":
-                return String(value);
-
-            default:
-                return value;
         }
     }
 

@@ -145,7 +145,7 @@ export class Lexer {
       const loc = { ...this.loc };
       let value = "";
 
-      while (this.peek() && /[0-9\-\.]/.test(this.peek()!)) {
+      while (this.peek() && /[0-9\-\/\.]/.test(this.peek()!)) {
         value += this.next();
       }
 

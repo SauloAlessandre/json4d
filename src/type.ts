@@ -45,6 +45,11 @@ export type DataRow = Record<string, any>;
 
 export type DataSet = DataRow[];
 
+export interface JSON4DTable {
+  schema: Schema;
+  data: DataRow[];
+}
+
 export type TokenType =
   | "NUMBER"
   | "STRING"
@@ -69,3 +74,11 @@ export interface Token {
   location: TokenPosition;
   value?: string;
 }
+
+export interface CSVOptions {
+  header?: boolean;        // default: true
+  delimiter?: string;      // default: ","
+  inferTypes?: boolean;    // default: true
+  schema?: Schema;
+}
+

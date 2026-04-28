@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, test } from "vitest";
 import { bindData } from "../../src/binder.js";
 
 describe("Binder", () => {
@@ -220,12 +220,22 @@ describe("Binder", () => {
       Date: { type: "date" }
     };
 
-    const data = [["2026-01-01"]];
+    {
+      const data = [["2026-01-01"]];
 
-    const result = bindData(schema, data);
+      const result = bindData(schema, data);
 
-    expect(result[0].Date).toBe("2026-01-01");
+      expect(result[0].Date).toBe("2026-01-01");
+    }
+    {
+      const data = [["2026/01/01"]];
+
+      const result = bindData(schema, data);
+
+      expect(result[0].Date).toBe("2026-01-01");
+    }
   });
+
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should accept valid datetime", () => {
     const schema = {
@@ -238,6 +248,7 @@ describe("Binder", () => {
 
     expect(result[0].CreatedAt).toBe("2026-01-01T10:30:00Z");
   });
+  
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject invalid datetime", () => {
     const schema = {
@@ -248,6 +259,7 @@ describe("Binder", () => {
 
     expect(() => bindData(schema, data)).toThrow();
   });
+  
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   it("should reject invalid month", () => {
     const schema = {
@@ -391,5 +403,45 @@ describe("Binder", () => {
     const data = [[200]];
 
     expect(() => bindData(schema, data)).toThrow();
+  });
+});
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+it("should accept a complete case for stock", () => {
+
+  const schema = {
+    Id: { type: "number" },
+    Type: { type: "string", accept: ["crypto", "stock", "invest"] },
+    orders: {
+      type: "array",
+      children: {
+        Type: { type: "string", accept: ["buy", "sell"] },
+        Amount: { type: "number" },
+        Value: { type: "number" },
+        Date: { type: "date" }
+      }
+    }
+  };
+
+  const data = [
+    [
+      1,
+      "crypto",
+      [
+        { 0: "buy", 1: 50, 2: 5, 3: '2022-02-02' },
+        { 0: "sell", 1: 30, 2: 4, 3: '2024/03/02' },
+      ]
+    ]
+  ];
+
+  const result = bindData(schema, data);
+
+  expect(result[0]).toEqual({
+    Id: 1,
+    Type: "crypto",
+    orders: [
+      { Type: "buy", Amount: 50, Value: 5, Date: '2022-02-02' },
+      { Type: "sell", Amount: 30, Value: 4, Date: '2024-03-02' }
+    ]
   });
 });
